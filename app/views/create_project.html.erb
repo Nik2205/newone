@@ -1,0 +1,134 @@
+<html>
+	<head>
+		<script src="/assets/jquery.min.js"></script>
+		<script src="/assets/create_project.js"></script>
+	</head>
+	<body>
+		<div class="container-fluid">
+	    <div class="row-fuid">
+	    <input type="button" onclick="javascript:home()" value="Back to Home Page" class="btn btn-primary"/>
+	    <h2>Welcome to PipeCast Project Creation Page</h2>
+	    </div> 			
+		<div class="col-md-4">
+			<%= form_for(:project, :url => {:controller => 'project', :action => 'addProject'} ,:html => { :multipart => true  , :id =>'createProjectForm'} ) do |f| %>
+			
+        <div class="col-md-5">
+	    Name of the Project</div>
+	    <div class="col-md-7">
+	    <%= f.text_field :project_heading , value: (@project.project_heading if @project) ,class:'form-control' %>
+	    </div>
+	
+		<div class="col-md-5">Project Description</div>
+		<div class="col-md-7"><%= f.text_area :project_description , value: (@project.project_description if @project) ,class:'form-control'%>
+		</div>	
+	
+	    <div class="col-md-5">Genre</div>
+		<div class="col-md-7">
+			<%= f.select(:project_genre) do%>
+				<%= content_tag(:option, 'select', value: -1) %>
+				<% @genres.each do |s| -%>
+					<%if @project %>	
+						<%if s.project_genre_id != @project.project_genre%>
+							<%= content_tag(:option, s.project_genre_name, value: s.project_genre_id ) %>
+						<%end%>
+						<%if s.project_genre_id == @project.project_genre%>
+							<%= content_tag(:option, s.project_genre_name, value: s.project_genre_id ,selected: "selected") %>
+						<%end%>
+					<%else %>
+						<%= content_tag(:option, s.project_genre_name, value: s.project_genre_id ) %>
+					<%end%>
+						
+				<% end %>
+			<% end %> 
+		  </div>
+	
+	    <div class="col-md-5">
+		 Category of the Project
+		 </div>
+		
+			<div  class="col-md-7">
+			<ul>
+				<% @categories.each do |category| -%>
+					<li>
+						<%if @projectCategories%>
+							<%if @projectCategories.include? category.category_id %>	
+								<%= category.category_name %> <%= check_box_tag 'category_ids[]', category.category_id ,selected: "selected"-%>
+							<%end%>	
+							<%if ! @projectCategories.include? category.category_id %>	
+									<%= category.category_name %> <%= check_box_tag 'category_ids[]', category.category_id -%>
+							<%end%>
+						<%else%>
+							<%= category.category_name %> <%= check_box_tag 'category_ids[]', category.category_id -%>
+						<%end%>		
+					</li>
+				<% end %>
+				</ul>
+	</div>
+	
+	<div class="col-md-5">Type of Project</div>
+		    <div class="col-md-7">
+			<%= f.select(:project_type) do %>
+				<%= content_tag(:option, 'select', value: -1) %>
+				<% @types.each do |s| -%>
+					<%if @project %>	
+						<%if s.project_type_id != @project.project_type%>
+							<%= content_tag(:option, s.project_type_name, value: s.project_type_id ) %>
+						<%end%>
+						<%if s.project_type_id == @project.project_type%>
+							<%= content_tag(:option, s.project_type_name, value: s.project_type_id ,selected: "selected") %>
+						<%end%>
+					<%else %>
+						<%= content_tag(:option, s.project_type_name, value: s.project_type_id ) %>
+					<%end%>
+						
+				<% end %>
+			<% end %> 
+		</div>
+	
+	
+	<div class="col-md-5">Project Image</div>
+		<div class="col-md-7">
+			<%if @project != nil%>
+			<%= image_tag @project.project_image.url,	size: "120x160" %>
+			<%end%>
+			<%= f.file_field :project_image %>
+		</div>
+		
+	<%if @project != nil%>
+		<%if @project.projectImages.length >0 %>
+			<%@project.projectImages.each do |projectImage|%>
+				<tr id="relatedImage<%=projectImage.project_image_id%>">
+				<td><%= image_tag projectImage.project_image.url,	size: "120x160" %></td>
+				<td><a href="javascript:deleteRelatedImage(<%=projectImage.project_image_id%>)">detete</a></td>
+				</tr>
+			<%end%>
+		<%end%>
+	<%end%>
+	
+		<div class="col-md-6">
+			<a href="javascript:addAnotherImage()">Add More Images </a>
+		</div>
+		
+	
+		<div class="col-md-6" id="otherImages"></div>
+		
+	    <div class="col-md-12" align="center">
+		<%if @project == nil%>
+			 <%= f.submit :Create %>
+		<%else%>
+		 <input type="button" value="update" onclick="javascript:updateProject()" class="btn btn-primary">
+		<%end%>		
+		
+	    </div>
+
+<%if @project != nil%>
+	<input type="hidden" name="projectId" value="<%=@project.project_id%>"/>
+<%end%>
+
+<% end %>
+</div>
+</div>
+<div col-md-8></div>
+</div>
+	</body>
+</html>

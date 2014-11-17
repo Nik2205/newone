@@ -1,0 +1,38 @@
+# SQLite version 3.x
+#   gem install sqlite3
+#
+#   Ensure the SQLite 3 gem is defined in your Gemfile
+#   gem 'sqlite3'
+#
+default: &default
+  adapter: mysql
+  pool: 5
+  timeout: 15000
+  host: 127.0.0.1
+  username: root
+  password: admin
+
+development:
+  <<: *default
+  database: pipecast
+# Warning: The database defined as "test" will be erased and
+# re-generated from your development database when you run "rake".
+# Do not set this db to the same as development or production.
+test:
+  <<: *default
+  database: pipecast
+
+production:
+  <<: *default
+  database: pipecast
+  
+# development:  
+  # adapter: mysql
+  # encoding: utf8
+  # database: db/pipecast
+  # pool: 5
+  # username: root
+  # password: admin
+  # host: localhost
+  # port: 3306
+  # timeout: 5000

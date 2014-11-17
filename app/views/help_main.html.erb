@@ -1,0 +1,28 @@
+<html>
+	<head>
+		<script src="/assets/jquery.min.js"></script>
+		<script>
+		function openAskHelp(){
+			$("#mainHelpForm").attr("action","openAskHelp");
+			$("#mainHelpForm").submit();
+		}
+		
+		function openHelpOthers(){
+			$("#mainHelpForm").attr("action","openHelpOthers");
+			$("#mainHelpForm").submit();
+		}	
+		</script>
+		
+	</head>
+<body>		
+this is the main help tab
+
+<form id ="mainHelpForm" method="post">
+<a href="javascript:openAskHelp()" >Ask Help</a>
+<br>
+<a href="javascript:openHelpOthers()" >Help Others</a>
+</form>
+
+</body>
+
+</html>

@@ -1,0 +1,5 @@
+<%if @followedUser !=nil%>
+	<%@followedUser.each do |user|%>
+		<%=user.first_name%><br>
+	<%end%>
+<%end%>

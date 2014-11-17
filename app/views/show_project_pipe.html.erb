@@ -1,0 +1,71 @@
+<script src="/assets/project_pipe_functionalities.js"></script>
+
+
+<%if ! @pipes.empty? %>
+	<div id="MyPipesAll">
+		<%@pipes.each do |p|%>
+			<div id="myPipe<%= p.project_pipe_id%>">
+				<span style="color:red" id="<%=p.project_pipe_id%>Content">
+					<%=p.content%>&nbsp;&nbsp;
+				</span>	
+					
+				<span id="<%=p.project_pipe_id%>PipeUpdateButton">	
+					<%if p.created_by == @user.user_id%>
+						<a href="javascript:editPipe(<%=p.project_pipe_id%>)">edit</a>
+					<%end%>
+				</span>
+				<span id="<%=p.project_pipe_id%>PipeDeleteButton">	
+					<%if p.created_by == @user.user_id%>
+						<a href="javascript:deletePipe(<%=p.project_pipe_id%>)">delete</a>
+					<%end%>
+				</span>
+				<%if ! p.projectPipeLikes.pluck(:user_id).include? session[:user_id] %>
+					<a href="javascript:likePipe(<%=p.project_pipe_id%>)" id="PreloadedPipeLikeLink<%=p.project_pipe_id%>">like</a>
+				<%else%>
+					<a href="javascript:unLikePipe(<%=p.project_pipe_id%>)" id="PreloadedPipeUnLikeLink<%=p.project_pipe_id%>">unlike</a>	
+				<%end%>
+				
+				<a href="javascript:likePipe(<%=p.project_pipe_id%>)" id="AfterloadPipeLikeLink<%=p.project_pipe_id%>" style="display:none">like</a>
+				<a href="javascript:unLikePipe(<%=p.project_pipe_id%>)" id="AfterloadPipeUnLikeLink<%=p.project_pipe_id%>" style="display:none">unlike</a>
+				
+				 
+				&nbsp; No. of likes on Pipe<span id="<%=p.project_pipe_id%>PipeLikes"><%=p.projectPipeLikes.count%></span>
+				
+				
+				<br>
+				<%p.projectPipeComments.each do |pc|%>
+					<div id="pipeCommentDiv<%= pc.project_pipe_comment_id%>">
+						&nbsp;&nbsp;&nbsp;&nbsp;Comment :<span id="<%=pc.project_pipe_comment_id%>CommentExisting"><%= pc.comment%> </span>
+						<span id="<%=pc.project_pipe_comment_id%>CommentUpdateButton">	
+							<%if pc.user_id == @user.user_id%>
+								<a href="javascript:editComment(<%=pc.project_pipe_comment_id%>)">edit</a>
+							<%end%>
+							<%if pc.user_id == @user.user_id or p.created_by == @user.user_id%>
+								<a href="javascript:deleteComment(<%=pc.project_pipe_comment_id%>)">Delete</a>
+							<%end%>
+						</span>
+						
+						
+						<%if ! pc.projectPipeCommentLikes.pluck(:user_id).include? session[:user_id] %>
+						<a href="javascript:likePipeComment(<%=pc.project_pipe_comment_id%>)" id="PreloadedPipeCommentLikeLink<%=pc.project_pipe_comment_id%>">like</a>
+						<%else%>
+							<a href="javascript:unLikePipeComment(<%=pc.project_pipe_comment_id%>)" id="PreloadedPipeCommentUnLikeLink<%=pc.project_pipe_comment_id%>">unlike</a>	
+						<%end%>
+						
+						<a href="javascript:likePipeComment(<%=pc.project_pipe_comment_id%>)" id="AfterloadPipeCommentLikeLink<%=pc.project_pipe_comment_id%>" style="display:none">like</a>
+						<a href="javascript:unLikePipeComment(<%=pc.project_pipe_comment_id%>)" id="AfterloadPipeCommentUnLikeLink<%=pc.project_pipe_comment_id%>" style="display:none">unlike</a>
+						
+						 
+						&nbsp; No. of likes on Comments <span id="<%=pc.project_pipe_comment_id%>PipeCommentLikes"><%=pc.projectPipeCommentLikes.count%></span>
+						<br>
+					</div>				
+				<%end%>
+				<div id="addedPipeComments<%= p.project_pipe_id%>"></div>
+				<br>
+				<textarea rows="1" cols="35" id="<%=p.project_pipe_id%>Comment" ></textarea> <a href="javascript:addComment(<%=p.project_pipe_id%>)">Add</a>
+				<br>
+			</div>
+		<%end%>
+	</div>
+	<%end%>
+	

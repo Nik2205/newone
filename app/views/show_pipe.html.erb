@@ -1,0 +1,50 @@
+<script src="/assets/pipe_functionalities.js"></script>
+
+<div id="MyPipesAll">
+				<%@pipes.each do |p|%>
+
+				<div id="myPipe<%= p.pipe_id%>">
+
+					<span style="color:red" id="<%= p.pipe_id%>Content"> <%= p.content%>&nbsp;&nbsp; </span>
+
+					<span id="<%= p.pipe_id%>PipeUpdateButton"> <%if p.created_by == @user.user_id%> <a href="javascript:editPipe(<%= p.pipe_id%>)">edit</a> <%end%> </span>
+					<span id="<%= p.pipe_id%>PipeDeleteButton"> <%if p.created_by == @user.user_id%> <a href="javascript:deletePipe(<%= p.pipe_id%>)">delete</a> <%end%> </span>
+					<%if ! p.pipeLikes.pluck(:user_id).include? session[:user_id] %>
+					<a href="javascript:likePipe(<%= p.pipe_id%>)" id="PreloadedPipeLikeLink<%= p.pipe_id%>">like</a>
+					<%else%>
+					<a href="javascript:unLikePipe(<%= p.pipe_id%>)" id="PreloadedPipeUnLikeLink<%= p.pipe_id%>">unlike</a>
+					<%end%>
+
+					<a href="javascript:likePipe(<%= p.pipe_id%>)" id="AfterloadPipeLikeLink<%= p.pipe_id%>" style="display:none">like</a>
+					<a href="javascript:unLikePipe(<%= p.pipe_id%>)" id="AfterloadPipeUnLikeLink<%= p.pipe_id%>" style="display:none">unlike</a>
+
+					&nbsp; No. of likes on Pipe<span id="<%= p.pipe_id%>PipeLikes"><%= p.pipeLikes.count%></span>
+
+					<br>
+					<%p.pipeComments.each do |pc|%>
+					<div id="pipeCommentDiv<%= pc.pipe_comment_id%>">
+						&nbsp;&nbsp;&nbsp;&nbsp;Comment :<span id="<%= pc.pipe_comment_id%>CommentExisting"><%= pc.comment%> </span>
+						<span id="<%= pc.pipe_comment_id%>CommentUpdateButton"> <%if pc.user_id == @user.user_id%> <a href="javascript:editComment(<%= pc.pipe_comment_id%>)">edit</a> <%end%>
+							<%if pc.user_id == @user.user_id or p.created_by == @user.user_id%> <a href="javascript:deleteComment(<%= pc.pipe_comment_id%>)">Delete</a> <%end%> </span>
+
+						<%if ! pc.pipeCommentLikes.pluck(:user_id).include? session[:user_id] %>
+						<a href="javascript:likePipeComment(<%= pc.pipe_comment_id%>)" id="PreloadedPipeCommentLikeLink<%= pc.pipe_comment_id%>">like</a>
+						<%else%>
+						<a href="javascript:unLikePipeComment(<%= pc.pipe_comment_id%>)" id="PreloadedPipeCommentUnLikeLink<%= pc.pipe_comment_id%>">unlike</a>
+						<%end%>
+
+						<a href="javascript:likePipeComment(<%= pc.pipe_comment_id%>)" id="AfterloadPipeCommentLikeLink<%= pc.pipe_comment_id%>" style="display:none">like</a>
+						<a href="javascript:unLikePipeComment(<%= pc.pipe_comment_id%>)" id="AfterloadPipeCommentUnLikeLink<%= pc.pipe_comment_id%>" style="display:none">unlike</a>
+
+						&nbsp; No. of likes on Comments <span id="<%= pc.pipe_comment_id%>PipeCommentLikes"><%= pc.pipeCommentLikes.count%></span>
+						<br>
+					</div>
+					<%end%>
+					<div id="addedPipeComments<%= p.pipe_id%>"></div>
+					<br>
+					<textarea rows="1" cols="35" id="<%= p.pipe_id%>Comment" ></textarea>
+					<a href="javascript:addComment(<%= p.pipe_id%>)">Add</a>
+					<br>
+				</div>
+				<%end%>
+			</div>

@@ -1,0 +1,193 @@
+<html>
+	<head>
+		<script src="/assets/jquery.min.js"></script>
+		<script src="/assets/show_project.js"></script>
+		<script src="/assets/project_pipe_functionalities.js"></script>
+		
+	</head>
+	<body>
+		<form id="showProjectForm" method="post">
+			
+		<%if @project.created_by != session[:user_id]%>	
+			<%if @followed ==1%>
+			
+			<br>
+				<input type="button" value="Unfollow" onclick="javascript:unfollowProject()"/>
+			<br>
+			<%else%>
+				<input type="button" value="Follow" onclick="javascript:followProject()"/>
+			<br>
+			<%end%>
+			
+			
+			<%if @colab ==1%>
+				You are Collaborating with the project , <input type="button" value="Request Decollab" onclick="javascript:deCollabProject()"/>
+			<br>
+			<%elsif @colab ==2%>
+				Your Request for Collaboration is pending with the admin of the project<br>
+			<%elsif @colab ==3%>
+				Your Request for De - Collaboration is pending with the admin of the project<br>	
+			<%else%>	
+				<input type="button" value="Colab" onclick="javascript:collabWithProject()"/>
+			<br>
+			<%end%>
+			
+		<%end%>	
+			
+		<a href="javascript:editProject()">Edit Project</a>
+
+		<table>
+			<tr>
+				<td colspan="2"> <%= image_tag @project.project_image.url,	size: "200x120" %> </td>
+			</tr>
+
+			<tr>
+				<td colspan="2"> Other Related Images :
+				<br>
+				<%@project.projectImages.each do |projectImage| %>
+				<%= image_tag projectImage.project_image.url,	size: "200x120" %>
+				<%end%> </td>
+			</tr>
+
+			<tr>
+				<td colspan="2"><h2> <%= @project.project_heading%></h2></td>
+			</tr>
+
+			<tr>
+				<td colspan="2"> <%= @project.project_description%> </td>
+			</tr>
+
+			<tr>
+				<td>Project status : </td>
+				<td > <%= @projectStatus[0]%> </td>
+			</tr>
+
+			<tr>
+				<td>Project genre : </td>
+				<td > <%= @projectGenre[0]%> </td>
+			</tr>
+
+			<tr>
+				<td>Project Type : </td>
+				<td > <%= @projectType[0]%> </td>
+			</tr>
+
+		</table>
+		
+		<%if @allowedToAdd == 1%>
+		<h3>Add a Pipe</h3>
+		<!-- <%if @tags != nil %>	
+			<%@tags.each do |tag|%>
+				<%=tag.tag_name%><%= check_box_tag 'tag_ids[]', tag.tag_id-%>
+			<%end%>
+		<%end%> -->	
+		<br>
+		<textarea rows="3" cols="50" name="pipeContent" id="pipeContent"></textarea>
+		<br>
+		<input type="button" value="Add a Pipe" onclick="javascript:addPipe()"/>
+			
+		<%end %>
+	<br>
+	
+	<%if ! @listOfCollaborators.empty?%>
+		<h3>List of Collaborators</h3>
+		<%@listOfCollaborators.each do |collaborator|%>
+			<a href="/showUser/<%=collaborator.collaborator_id%>"><%=collaborator.user.first_name%></a>
+		<%end%>
+	<%end%>
+	
+	
+	
+	<br>
+	
+	<%if ! @listOfFollowers.empty?%>
+		<h3>List of Followers</h3>
+		<%@listOfFollowers.each do |follower|%>
+			<a href="/showUser/<%=follower.follower_id%>"><%=follower.user.first_name%></a>
+		<%end%>
+	<%end%>
+	
+	<br>
+	<h3>Other Pipes</h3>
+	
+	<%if ! @pipes.empty? %>
+	<div id="MyPipesAll">
+		<%@pipes.each do |p|%>
+			<div id="myPipe<%= p.project_pipe_id%>">
+				<span style="color:red" id="<%=p.project_pipe_id%>Content">
+					<%=p.content%>&nbsp;&nbsp;
+				</span>	
+					
+				<span id="<%=p.project_pipe_id%>PipeUpdateButton">	
+					<%if p.created_by == @user.user_id%>
+						<a href="javascript:editPipe(<%=p.project_pipe_id%>)">edit</a>
+					<%end%>
+				</span>
+				<span id="<%=p.project_pipe_id%>PipeDeleteButton">	
+					<%if p.created_by == @user.user_id%>
+						<a href="javascript:deletePipe(<%=p.project_pipe_id%>)">delete</a>
+					<%end%>
+				</span>
+				<%if ! p.projectPipeLikes.pluck(:user_id).include? session[:user_id] %>
+					<a href="javascript:likePipe(<%=p.project_pipe_id%>)" id="PreloadedPipeLikeLink<%=p.project_pipe_id%>">like</a>
+				<%else%>
+					<a href="javascript:unLikePipe(<%=p.project_pipe_id%>)" id="PreloadedPipeUnLikeLink<%=p.project_pipe_id%>">unlike</a>	
+				<%end%>
+				
+				<a href="javascript:likePipe(<%=p.project_pipe_id%>)" id="AfterloadPipeLikeLink<%=p.project_pipe_id%>" style="display:none">like</a>
+				<a href="javascript:unLikePipe(<%=p.project_pipe_id%>)" id="AfterloadPipeUnLikeLink<%=p.project_pipe_id%>" style="display:none">unlike</a>
+				
+				 
+				&nbsp; No. of likes on Pipe<span id="<%=p.project_pipe_id%>PipeLikes"><%=p.projectPipeLikes.count%></span>
+				
+				
+				<br>
+				<%p.projectPipeComments.each do |pc|%>
+					<div id="pipeCommentDiv<%= pc.project_pipe_comment_id%>">
+						&nbsp;&nbsp;&nbsp;&nbsp;Comment :<span id="<%=pc.project_pipe_comment_id%>CommentExisting"><%= pc.comment%> </span>
+						<span id="<%=pc.project_pipe_comment_id%>CommentUpdateButton">	
+							<%if pc.user_id == @user.user_id%>
+								<a href="javascript:editComment(<%=pc.project_pipe_comment_id%>)">edit</a>
+							<%end%>
+							<%if pc.user_id == @user.user_id or p.created_by == @user.user_id%>
+								<a href="javascript:deleteComment(<%=pc.project_pipe_comment_id%>)">Delete</a>
+							<%end%>
+						</span>
+						
+						
+						<%if ! pc.projectPipeCommentLikes.pluck(:user_id).include? session[:user_id] %>
+						<a href="javascript:likePipeComment(<%=pc.project_pipe_comment_id%>)" id="PreloadedPipeCommentLikeLink<%=pc.project_pipe_comment_id%>">like</a>
+						<%else%>
+							<a href="javascript:unLikePipeComment(<%=pc.project_pipe_comment_id%>)" id="PreloadedPipeCommentUnLikeLink<%=pc.project_pipe_comment_id%>">unlike</a>	
+						<%end%>
+						
+						<a href="javascript:likePipeComment(<%=pc.project_pipe_comment_id%>)" id="AfterloadPipeCommentLikeLink<%=pc.project_pipe_comment_id%>" style="display:none">like</a>
+						<a href="javascript:unLikePipeComment(<%=pc.project_pipe_comment_id%>)" id="AfterloadPipeCommentUnLikeLink<%=pc.project_pipe_comment_id%>" style="display:none">unlike</a>
+						
+						 
+						&nbsp; No. of likes on Comments <span id="<%=pc.project_pipe_comment_id%>PipeCommentLikes"><%=pc.projectPipeCommentLikes.count%></span>
+						<br>
+					</div>				
+				<%end%>
+				<div id="addedPipeComments<%= p.project_pipe_id%>"></div>
+				<br>
+				<textarea rows="1" cols="35" id="<%=p.project_pipe_id%>Comment" ></textarea> <a href="javascript:addComment(<%=p.project_pipe_id%>)">Add</a>
+				<br>
+			</div>
+		<%end%>
+	</div>
+	<%end%>
+	
+	<input type="hidden" name="hdn_pipe_content" id="hdn_pipe_content"  autocomplete="off" />
+	<input type="hidden" name="hdn_pipe_comment_content" id="hdn_pipe_comment_content"  autocomplete="off" />
+	<input type="hidden" name="pipe_comment" id="pipe_comment"  autocomplete="off" />
+	<input type="hidden" name="pipe_id" id="pipe_id"  autocomplete="off" />
+	<input type="hidden" name="pipe_comment_id" id="pipe_comment_id"  autocomplete="off" />
+	
+	<input type="hidden" name="tags" id="tags" />
+			
+		
+		<input type="hidden" value="<%=@project.project_id%>" name="projectId" id="projectId"/>
+	</form>
+	</body>
+</html>

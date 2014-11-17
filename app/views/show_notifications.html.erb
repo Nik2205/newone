@@ -1,0 +1,53 @@
+<%if @notifications != nil%>
+	<table id ="notificationsTable">
+		<%@notifications.each do |note|%>
+			<tr>
+				<td style="background-color: yellow" onclick="javascript:notificationAction(<%=note.notification_id%>,<%=note.type_of_notification%>,<%=note.affected_id%>)">
+					<!-- <div onclick="javascript:notificationAction(type_of_notification,note.affected_id)"> -->
+						<%if note.type_of_notification == 1%>
+							<%=note.user.first_name%> liked your  pipe
+						<%elsif note.type_of_notification == 2%>
+							<%=note.user.first_name%> commented on your pipe	
+						<%elsif note.type_of_notification == 3%>
+							<%=note.user.first_name%> liked your comment on pipe
+						<%elsif note.type_of_notification == 4%>
+							<%=note.user.first_name%> liked your  pipe
+						<%elsif note.type_of_notification == 5%>
+							<%=note.user.first_name%> commented on your pipe	
+						<%elsif note.type_of_notification == 6%>
+							<%=note.user.first_name%> liked your comment on pipe				
+						<%elsif note.type_of_notification == 7%>
+							<%=note.user.first_name%> sent a request to colab with Project
+						<%elsif note.type_of_notification == 8%>
+							<%=note.user.first_name%> has approved your request to colab with Project
+						<%elsif note.type_of_notification == 9%>
+							<%=note.user.first_name%> has rejected your request to colab with  Project
+						<%else%>
+						<%end%>
+					<!-- </div> -->
+				</td>
+			</tr>
+		<%end%>
+		
+		<%if @countOfFollowers > 0%>
+			<tr>
+				<td style="background-color: yellow" onclick="javascript:notificationFollowerAction()">
+					You have <%=@countOfFollowers%> new Followers
+				</td>
+			</tr>	
+		<%end%>
+		
+		<%if @ccountOfProjectFollowers > 0%>
+			<%@projectFollowerHash.each do |key,value|%>
+			<tr>
+				<td style="background-color: yellow" onclick="javascript:notificationProjectFollowerAction(<%=key%>)">
+					<%=value %> user followed your project id <%=key%>					
+				</td>
+			</tr>
+			<%end%>	
+		<%end%>
+		
+		
+		
+	</table>	
+<%end%>

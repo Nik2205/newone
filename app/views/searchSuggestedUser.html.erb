@@ -1,0 +1,68 @@
+<script src="/assets/jquery.min.js"></script>
+<script src="/assets/searchSuggUser.js"></script>
+<div class="container-fluid">
+	
+<div class="col-md-3">	
+<div class="row-fluid">
+<%= image_tag @searchSuggUser.avatar.url, alt:"Amit Rai", class:"avatar center-block img-circle img-thumbnail img-responsive " %>
+
+<a href="/logout">Logout</a>
+</div>
+
+<div class="row-fluid">
+<%if @followed ==1%>
+	You are following <%=@searchSuggUser.first_name%><br>
+	<input type="button" value="Unfollow" onclick="javascript:unfollowUser()"/><br>
+<%else%>
+	<input type="button" value="Follow" onclick="javascript:followUser()"/><br>	 
+<%end%>
+
+<input type="button" value="message" id="messageDivOpener"/>
+
+<div id="messageDiv" style="display:none">
+	<textarea rows="3" cols="50"name="messageText"></textarea>
+	<input type="button" value="send" onclick="javascript:sendMessage()"/>
+</div>
+</div>
+
+</div>
+
+
+<div class="col-md-6 pipefeed">
+	<div class="row-fluid">
+    <form  method="post" action="" id="searchSuggUserFrom" autocomplete="off" >
+
+	<%@searchSuggUserPipes.each do |p|%>
+		<span style="color:Black" id="<%=p.pipe_id%>Content" class="jumbotron">
+			<%=p.content%>
+		</span>
+		<br>
+		</div>
+     
+     <div class="col-md-12 comment">
+		<%p.pipeComments.each do |pc|%>
+			&nbsp;&nbsp;&nbsp;&nbsp;Comment :<span id="<%=pc.pipe_comment_id%>CommentExisting"><%= pc.comment%> </span>
+			<span id="<%=pc.pipe_comment_id%>CommentUpdateButton">	
+				
+				<%if pc.user_id == @user.user_id%>
+					<a href="javascript:deleteComment(<%=pc.pipe_comment_id%>)">Delete</a>
+				<%end%> 
+			</span>
+			<br>			
+		<%end%>
+		<div>
+		<br>
+		<textarea class="form-control comment" rows="3" id="<%=p.pipe_id%>Comment"></textarea>
+		<a href="javascript:addComment(<%=p.pipe_id%>)">Add</a>
+		<br>
+	<%end%>
+	
+	<input type="hidden" name="pipe_comment" id="pipe_comment"  autocomplete="off" />
+	<input type="hidden" name="pipe_id" id="pipe_id"  autocomplete="off" />
+	<input type="hidden" name="differentUser" id="differentUser"  autocomplete="off" value="<%=@searchSuggUser.user_id%>"/>
+	
+	<input type="hidden" name="pipe_comment_id" id="pipe_comment_id"  autocomplete="off" />
+</>	
+</div></div>
+
+<div class="col-md-3 sidebar2"> </div>

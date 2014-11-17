@@ -1,0 +1,169 @@
+
+<div class="container-fluid">
+<%= form_for(:user, :url => {:controller => 'register', :action => 'register'} ,:html => { :multipart => true }) do |f| %>
+
+<div class="row-fluid">
+    <h2 align="center">Welcome to PipeCast Registration Page</h2>
+    </div>
+<div class="col-md-4">
+	<div class="row-fluid">
+    <h2 align="center">Fill Your Details</h2>
+    </div>
+	<div class"row-fluid">
+	<td colspan="2">&nbsp;
+	<%= f.hidden_field  :user_id , value: @user.user_id if @user%>
+	</td>
+	</div>
+	<div class"row-fluid">
+	<div class="col-xs-8 col-sm-6" align="right">User Name :</div> <div class="col-xs-4 col-sm-6" align="left" padding-bottom="3px"> <%= f.text_field :user_name , value: (@user.user_name if @user)%></div>
+	</div>
+	<br></br>
+	<div class"row-fluid">
+		<div class="col-xs-8 col-sm-6" align="right">Email:</div><div class="col-xs-4 col-sm-6" align="left"><%= f.text_field :email_id , value: (@user.email_id if @user)%></div>
+	</div>
+	<br></br>
+	<div class"row">
+		<div class="col-xs-8 col-sm-6" align="right">Avatar:</div>
+		<div class="col-xs-8 col-sm-6" align="left">
+			<%if session[:user_id] != ""%>
+			<%= image_tag @user.avatar.url,	size: "120x160" %>
+			<%end%>
+			<%= f.file_field :avatar %>
+		</div>
+	</div>
+	<br></br>
+	<div class"row">
+		<div class="col-xs-8 col-sm-6" align="right">First Name:</div><div class="col-xs-4 col-sm-6" align="left"><%= f.text_field :first_name , value: (@user.first_name if @user)%></div>
+	</div>
+	<br></br>
+	<div class"row">
+		<div class="col-xs-8 col-sm-6" align="right">Middle Name:</div><div class="col-xs-4 col-sm-6" align="left"><%= f.text_field :middle_name , value: (@user.middle_name if @user)%></div>
+	</div>
+	<br></br>
+	<div class"row">
+		<div class="col-xs-8 col-sm-6" align="right">Last Name:</div><div class="col-xs-4 col-sm-6" align="left"><%= f.text_field :last_name , value:( @user.last_name if @user )%></div>
+	</div>
+<br></br>
+	
+	<%if session[:user_id] == ""%>
+	<div class"row">
+		<div class="col-xs-8 col-sm-6" align="right"> Password:</div><div class="col-xs-4 col-sm-6" align="left"> <%= f.password_field :password%></div>
+	</div>
+	<br></br>
+	<div class"row">
+		<div class="col-xs-8 col-sm-6" align="right">Password Confirmation:</div><div class="col-xs-4 col-sm-6" align="left"> <%= f.password_field :password_confirmation%></div>
+	</div>
+	<%end %>
+	<br></br>
+	
+	<div class="row">
+		<div class="col-xs-8 col-sm-6" align="right"> Type of Project :</div>
+		<div class="col-xs-4 col-sm-6" align="left">
+		<% @categories.each do |category| -%>
+					<li>
+						<%if @userCategories%>
+							<%if @userCategories.include? category.category_id %>	
+								<%= category.category_name %> <%= check_box_tag 'category_ids[]', category.category_id ,selected: "selected"-%>
+							<%end%>	
+							<%if ! @userCategories.include? category.category_id %>	
+									<%= category.category_name %> <%= check_box_tag 'category_ids[]', category.category_id -%>
+							<%end%>
+						<%else%>
+							<%= category.category_name %> <%= check_box_tag 'category_ids[]', category.category_id -%>
+						<%end%>		
+					</li>
+				<% end %>
+				</ul>
+		      </div>
+		      </div>
+	
+	
+	
+	<div class"row">
+		<div class="col-xs-8 col-sm-6" align="right"> City:</div>
+		<div class="col-xs-4 col-sm-6" align="left">
+			<%= f.select(:city) do %>
+				<%= content_tag(:option, 'select', value: -1) %>
+				<% @cities.each do |c| -%>
+					<%if @user %>	
+						<%if c.city_id != @user.city%>
+							<%= content_tag(:option, c.city_name, value: c.city_id ) %>
+						<%end%>
+						<%if c.city_id == @user.city%>
+							<%= content_tag(:option, c.city_name, value: c.city_id ,selected: "selected") %>
+						<%end%>
+					<%else %>
+						<%= content_tag(:option, c.city_name, value: c.city_id ) %>
+					<%end%>
+						
+				<% end %>
+			<% end %> 
+		</div>
+	</div>
+	<br></br>
+	<div class"row">
+		<div class="col-xs-8 col-sm-6" align="right">Phone Number:</div><div class="col-xs-4 col-sm-6" align="left"><%= f.text_field :phone_no , value: (@user.phone_no if @user)%></div>
+	</div>
+	<br></br>
+	<div class"row">
+		<div class="col-xs-8 col-sm-6" align="right">Address:</div><div class="col-xs-4 col-sm-6" align="left"><%= f.text_area :address , value: (@user.address if @user)%></div>
+	</div>
+	<br></br>
+	<br></br>
+	<div class"row">
+		<div class="col-xs-8 col-sm-6" align="right">Occupation:</div>
+		<div class="col-xs-4 col-sm-6" align="left"> 
+			<%= f.select(:occupation) do %>
+				<%= content_tag(:option, 'select', value: -1) %>
+				<% @occupations.each do |o| -%>
+							
+					<%if @user %>			
+						<%if o.occupation_id != @user.occupation%>		
+						<%= content_tag(:option, o.occupation_name, value: o.occupation_id) %>
+						<%end%>
+						<%if o.occupation_id == @user.occupation%>
+							<%= content_tag(:option, o.occupation_name, value: o.occupation_id ,selected: "selected") %>
+						<%end%>
+					<%else%>
+						<%= content_tag(:option, o.occupation_name, value: o.occupation_id) %>	
+					<%end%>	
+				<% end %>
+			<% end %> 
+		</div>
+	</div>
+<br></br>
+	<div class"row">
+		<div class="col-xs-8 col-sm-6" align="right">Interests : </div>
+		<div class="col-xs-4 col-sm-6" align="left">
+			
+   		<ul>
+				<% @interests.each do |i| -%>
+					<li>
+						<%if @userInterests%>
+							<%if @userInterests.include? i.id %>	
+								<%= i.interest_name %> <%= check_box_tag 'interest_ids[]', i.id ,selected: "selected"-%>
+							<%end%>	
+							<%if ! @userInterests.include? i.id %>	
+								<%= i.interest_name %> <%= check_box_tag 'interest_ids[]', i.id -%>
+							<%end%>
+						<%else%>
+							<%= i.interest_name %> <%= check_box_tag 'interest_ids[]', i.id -%>
+						<%end%>		
+					</li>
+				<% end %>
+				</ul>
+		</div>
+	</div>
+<br></br>
+	<div class"row">
+		<div class="col-xs-12" align="center"> <%= f.submit :Signup %></div>
+	
+<% end %>
+</div>
+</div>
+
+</div>
+
+
+
+
