@@ -234,5 +234,24 @@ class PipeController < ApplicationController
     PipeCommentLike.where(["user_id =? and pipe_comment_id =?",session[:user_id],params[:pipeCommentId]]).destroy_all
     
     render html: PipeCommentLike.where(["pipe_comment_id =?",params[:pipeCommentId]]).count
+  end
+  
+  def sharePipe
+    puts "Sharing the pipe"
+    pipeShare = PipeShare.where(["pipe_id = ? and share_by = ?",params[:pipeId],session[:user_id]])
+    if pipeShare.empty?
+      objPipeShare = PipeShare.new
+      objPipeShare.pipe_id = params[:pipeId]
+      objPipeShare.share_by = session[:user_id]
+      objPipeShare.share_from = params[:sharefrom]
+      objPipeShare.last_updated_date = Date.current
+      objPipeShare.save
+    else
+      puts pipeShare[0].last_updated_date
+      pipeShare[0].last_updated_date = Date.current
+      pipeShare[0].save
+    end    
+    
+    render html: 'pipe shared'
   end      
 end

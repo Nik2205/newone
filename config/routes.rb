@@ -177,6 +177,7 @@ Rails.application.routes.draw do
    
    get 'show_project/:project_id', to: 'project#show_project'
    
+   post 'sharePipe' , to: 'pipe#sharePipe' 
    
       
 end

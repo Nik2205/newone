@@ -14,6 +14,19 @@ class LoginController < ApplicationController
       puts session[:user_id]
 
       @pipes =Pipe.where(["created_by =? and pipe_type= ?",session[:user_id],'N'])
+      tempSharedPipe =Array.new
+      PipeShare.where(["share_by = ? ",session[:user_id]]).each do |sharedPipe|
+        if tempSharedPipe ==nil
+          tempSharedPipe[0] = sharedPipe
+        else
+          tempSharedPipe << sharedPipe 
+        end
+      end
+      
+      @pipes =@pipes + tempSharedPipe
+      @pipes.sort! { |a,b| b.last_updated_date <=> a.last_updated_date }
+      
+      
       @cities = City.all
       @occupations = Occupation.all
       @tags =Tag.all
@@ -61,7 +74,20 @@ class LoginController < ApplicationController
   
   def showUser
       @user = User.find(session[:user_id])
+      
       @pipes =Pipe.where(["created_by =? and pipe_type = ?",session[:user_id],'N'])
+      tempSharedPipe =Array.new
+      PipeShare.where(["share_by = ? ",session[:user_id]]).each do |sharedPipe|
+        if tempSharedPipe ==nil
+          tempSharedPipe[0] = sharedPipe
+        else
+          tempSharedPipe << sharedPipe 
+        end
+      end
+      
+      @pipes =@pipes + tempSharedPipe
+      @pipes.sort! { |a,b| b.last_updated_date <=> a.last_updated_date }
+      
       @cities = City.all
       @occupations = Occupation.all
       @tags =Tag.all
@@ -106,10 +132,10 @@ class LoginController < ApplicationController
   
   def pipeSuggest
    @user = User.find(session[:user_id])
-      @pipes =Pipe.all
-      @cities = City.all
-      @occupations = Occupation.all
-      @tags =Tag.all
+      # @pipes =Pipe.all
+      # @cities = City.all
+      # @occupations = Occupation.all
+      # @tags =Tag.all
       
       objSuggestion = Suggestion.new(session[:user_id])
       @pipeSuggestionsByOccupation = objSuggestion.pipeSuggestiobyOccupation

@@ -342,6 +342,20 @@ def suggestionsBasedOnOccupation
     @pipes =Array.new
     FollowUp.where(["follow_type = ? and follower_id =?" , 1 ,@currentUser]).pluck(:user_or_page_id).each do |followedUser|
       pipes = Pipe.where("created_by = ? and pipe_type= ?",followedUser,'N')
+      
+      tempSharedPipe =Array.new
+      PipeShare.where(["share_by = ? ",followedUser]).each do |sharedPipe|
+        if tempSharedPipe ==nil
+          tempSharedPipe[0] = sharedPipe
+        else
+          tempSharedPipe << sharedPipe 
+        end
+      end
+      
+      pipes =pipes + tempSharedPipe
+      pipes.sort! { |a,b| b.last_updated_date <=> a.last_updated_date }
+      
+      
       if ! pipes.empty?
         pipes.each do |pipe|
           if @pipes == nil

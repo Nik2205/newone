@@ -1,13 +1,17 @@
 class GeneralUtilitiesController < ApplicationController
   def showPipe
     @user =User.find(session[:user_id])
-    @pipes = Pipe.where("pipe_id = ? ",params[:pipe_id])
+    objPipeShare = PipeShare.where(["share_by = ? and pipe_id = ?",session[:user_id],params[:pipe_id]])
+    if objPipeShare.empty?
+      @pipes = Pipe.where("pipe_id = ? ",params[:pipe_id])
+    else
+      @pipes = objPipeShare[0]
+    ens    
     
       Notification.where(["user_id = ? and read_status = ? ",session[:user_id],0]).each do |note|
         note.read_status =1
         note.save
       end
-    
     render '/show_pipe'
   end
    

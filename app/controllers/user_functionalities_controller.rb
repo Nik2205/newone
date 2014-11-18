@@ -83,15 +83,34 @@ class UserFunctionalitiesController < ApplicationController
       end
     end
     
-     friend = User.where(friendQuery)
-    
-    puts 'testu'
+    friend = User.where(friendQuery)
     @friends =friend
     
     puts friendQuery.inspect
     puts @friends.inspect
-
-   @pipes =Pipe.where(["created_by =? and pipe_type = ?",session[:user_id],'N'])
+    
+    
+    
+    query = "SELECT * FROM projects WHERE INSTR(project_heading, '"+params[:friendName] +"') > 0";
+    projectResults = Project.find_by_sql(query)
+    puts projectResults.inspect
+   
+    
+    @friends =@friends + projectResults
+   
+      @pipes =Pipe.where(["created_by =? and pipe_type = ?",session[:user_id],'N'])
+      tempSharedPipe =Array.new
+      PipeShare.where(["share_by = ? ",session[:user_id]]).each do |sharedPipe|
+        if tempSharedPipe ==nil
+          tempSharedPipe[0] = sharedPipe
+        else
+          tempSharedPipe << sharedPipe 
+        end
+      end
+      
+      @pipes =@pipes + tempSharedPipe
+      @pipes.sort! { |a,b| b.last_updated_date <=> a.last_updated_date }
+     
       @cities = City.all
       @occupations = Occupation.all
       @tags =Tag.all
@@ -132,11 +151,6 @@ class UserFunctionalitiesController < ApplicationController
     
     
     
-    query = "SELECT * FROM projects WHERE INSTR(project_heading, '"+params[:friendName] +"') > 0";
-   # projectResults = ActiveRecord::Base.execute(query) 
-    projectResults = Project.find_by_sql(query)
-    puts projectResults.inspect
-    puts "project done"
     
 
     render "/home"
@@ -149,7 +163,19 @@ class UserFunctionalitiesController < ApplicationController
     
     @user = User.find(session[:user_id])
     @searchSuggUser = User.find(params[:user_id])
-    @searchSuggUserPipes = Pipe.where(created_by: params[:user_id])
+    @searchSuggUserPipes = Pipe.where(["created_by =? and pipe_type= ?", params[:user_id],'N'])
+    tempSharedPipe =Array.new
+      PipeShare.where(["share_by = ? ",params[:user_id]]).each do |sharedPipe|
+        if tempSharedPipe ==nil
+          tempSharedPipe[0] = sharedPipe
+        else
+          tempSharedPipe << sharedPipe 
+        end
+      end
+      
+      @searchSuggUserPipes =@searchSuggUserPipes + tempSharedPipe
+      @searchSuggUserPipes.sort! { |a,b| b.last_updated_date <=> a.last_updated_date }
+   
     
     if ! FollowUp.where(["follower_id = ? and follow_type=?",session[:user_id],1]).empty?
       @followed =1
@@ -164,6 +190,8 @@ class UserFunctionalitiesController < ApplicationController
      @user = User.find(session[:user_id])
      @searchSuggUser = User.find(params[:differentUser])
      @searchSuggUserPipes = Pipe.where(created_by: params[:differentUser])
+     
+     
      
      
      FollowUp.where(["follower_id = ? and follow_type=? and user_or_page_id = ?",session[:user_id],1,params[:differentUser]]).destroy_all
@@ -182,6 +210,17 @@ class UserFunctionalitiesController < ApplicationController
      @user = User.find(session[:user_id])
      @searchSuggUser = User.find(params[:differentUser])
      @searchSuggUserPipes = Pipe.where(created_by: params[:differentUser])
+     tempSharedPipe =Array.new
+      PipeShare.where(["share_by = ? ",params[:differentUser]]).each do |sharedPipe|
+        if tempSharedPipe ==nil
+          tempSharedPipe[0] = sharedPipe
+        else
+          tempSharedPipe << sharedPipe 
+        end
+      end
+      
+      @searchSuggUserPipes =@searchSuggUserPipes + tempSharedPipe
+      @searchSuggUserPipes.sort! { |a,b| b.last_updated_date <=> a.last_updated_date }
      
      objFollowUp = FollowUp.new
      objFollowUp.follow_type = 1
